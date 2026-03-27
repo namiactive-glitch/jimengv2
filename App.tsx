@@ -80,10 +80,6 @@ const App: React.FC = () => {
     saveAuthSession(updatedSession);
   };
 
-  if (!session) {
-    return <Login onLogin={handleLogin} />;
-  }
-
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-[#FDFDFD] font-sans selection:bg-orange-200 selection:text-orange-900 overflow-x-hidden w-full">
@@ -153,46 +149,64 @@ const App: React.FC = () => {
 
             <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
               {/* Timer & User Info */}
-              <div className="hidden sm:flex flex-col items-end mr-2">
-                <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                  <UserIcon className="w-3 h-3" /> {session.username}
-                </div>
-                <div className="flex items-center gap-1.5 text-[10px] font-black text-orange-500 uppercase tracking-widest">
-                  <Clock className="w-3 h-3" /> {timeLeft}
-                </div>
-              </div>
+              {session ? (
+                <>
+                  <div className="hidden sm:flex flex-col items-end mr-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <UserIcon className="w-3 h-3" /> {session.username}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[10px] font-black text-orange-500 uppercase tracking-widest">
+                      <Clock className="w-3 h-3" /> {timeLeft}
+                    </div>
+                  </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1 sm:gap-2">
-                <button 
-                  onClick={() => setIsApiKeyOpen(true)}
-                  className="p-2 sm:p-2.5 bg-slate-50 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-xl border border-slate-200 transition-all active:scale-90"
-                  title="Quản lý API Key"
-                >
-                  <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-                <button 
-                  onClick={handleLogout}
-                  className="p-2 sm:p-2.5 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl border border-slate-200 transition-all active:scale-90"
-                  title="Đăng xuất"
-                >
-                  <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <button 
+                      onClick={() => setIsApiKeyOpen(true)}
+                      className="p-2 sm:p-2.5 bg-slate-50 text-slate-400 hover:text-orange-500 hover:bg-orange-50 rounded-xl border border-slate-200 transition-all active:scale-90"
+                      title="Quản lý API Key"
+                    >
+                      <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                    <button 
+                      onClick={handleLogout}
+                      className="p-2 sm:p-2.5 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl border border-slate-200 transition-all active:scale-90"
+                      title="Đăng xuất"
+                    >
+                      <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <div className="hidden sm:block text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    Vui lòng đăng nhập
+                  </div>
+                  <button 
+                    onClick={() => setActiveTab('single')}
+                    className="px-4 py-2 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all active:scale-95"
+                  >
+                    Đăng nhập
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           
           {/* Sub-nav message like in the image */}
           <div className="bg-white border-b border-slate-50 py-1 flex justify-center px-4">
             <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-              <div className="sm:hidden flex items-center gap-3">
-                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                  <UserIcon className="w-2.5 h-2.5" /> {session.username}
-                </span>
-                <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-1">
-                  <Clock className="w-2.5 h-2.5" /> {timeLeft}
-                </span>
-              </div>
+              {session && (
+                <div className="sm:hidden flex items-center gap-3">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                    <UserIcon className="w-2.5 h-2.5" /> {session.username}
+                  </span>
+                  <span className="text-[9px] font-bold text-orange-500 uppercase tracking-widest flex items-center gap-1">
+                    <Clock className="w-2.5 h-2.5" /> {timeLeft}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -205,14 +219,16 @@ const App: React.FC = () => {
           <div className="space-y-8">
             {activeTab === 'guide' ? (
               <UserGuideModule onNavigate={(tab) => setActiveTab(tab)} />
+            ) : activeTab === 'marketing' ? (
+              <MarketingSolutionsModule />
+            ) : !session ? (
+              <Login onLogin={handleLogin} />
             ) : activeTab === 'single' ? (
               <CinematicPromptModule />
             ) : activeTab === 'series' ? (
               <SeriesDirectorModule />
-            ) : activeTab === 'story' ? (
-              <StoryStudioModule />
             ) : (
-              <MarketingSolutionsModule />
+              <StoryStudioModule />
             )}
           </div>
         </main>
@@ -221,12 +237,14 @@ const App: React.FC = () => {
            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-[0.3em]">© 2026 AI JIMENG — Tạo Prompt Video AI Chuyên Nghiệp</span>
         </footer>
 
-        <ApiKeyManager 
-          isOpen={isApiKeyOpen} 
-          onClose={() => setIsApiKeyOpen(false)} 
-          keys={session.extraApiKeys || []}
-          onSave={handleSaveApiKeys}
-        />
+        {session && (
+          <ApiKeyManager 
+            isOpen={isApiKeyOpen} 
+            onClose={() => setIsApiKeyOpen(false)} 
+            keys={session.extraApiKeys || []}
+            onSave={handleSaveApiKeys}
+          />
+        )}
       </div>
     </ErrorBoundary>
   );
