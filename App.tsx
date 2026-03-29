@@ -149,7 +149,7 @@ const App: React.FC = () => {
 
             <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
               {/* Timer & User Info */}
-              {session ? (
+              {session && (
                 <>
                   <div className="hidden sm:flex flex-col items-end mr-2">
                     <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -178,18 +178,6 @@ const App: React.FC = () => {
                     </button>
                   </div>
                 </>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <div className="hidden sm:block text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                    Vui lòng đăng nhập
-                  </div>
-                  <button 
-                    onClick={() => setActiveTab('single')}
-                    className="px-4 py-2 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all active:scale-95"
-                  >
-                    Đăng nhập
-                  </button>
-                </div>
               )}
             </div>
           </div>
